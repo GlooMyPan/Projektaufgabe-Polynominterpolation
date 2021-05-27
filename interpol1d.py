@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun May 23 21:21:50 2021
+Created on Sun May 23 09:25:35 2021
 
-@author: Erdenetuya, Xuantong Pan
+@author:  Xuantong Pan, Erdenetuya Undral
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-# Auswertung des Polynoms mit Koeffizienten b und Stuetzstellen xk, an den Stellen x
+# Auswertung des Polynoms mit Koeffizienten bk und Stuetzstellen xk, an den Stellen x
 def polNewtonHorner(bk, xk, x):
     """
     
@@ -18,7 +18,7 @@ def polNewtonHorner(bk, xk, x):
     ----------
     bk : Koeffizienten bezüglich der Newtonbasis
     xk : Stuetzstellen
-    x  : ndarray, von xk[0] bis xk[1]
+    x :  ndarray, von xk[0] bis xk[1]
 
     Returns
     -------
@@ -65,9 +65,9 @@ def poly_interpol(x, xi, yi):
 
     Parameters
     ----------
-    x  : ndarray, von xi[0] bis xi[1]
     xi : Stuetzstellen
     yi : Stützwerten
+    x :ndarray, von xi[0] bis xi[1]
 
     Returns
     -------
@@ -79,24 +79,28 @@ def poly_interpol(x, xi, yi):
     y = polNewtonHorner(bk, xi, x)
     
     return y
-
+def test_poly_interpol():
+    '''
+    test-function for polynomial interpolation()
+    '''    
+    xi = np.linspace(-5, 5, 6)  # aequidistante Stuetzstellen im Intervall [-5, 5]
+    yi = np.random.randint(-5, 5, size=6).astype(float)
+    b  = koeffNewtonBasis(xi, yi)
+    
+    x = np.linspace(-5, 5, 200)
+    y = polNewtonHorner(b, xi, x)
+    
+    # Visualisierung des Interpolationspolynoms zusammen mit den Stuetzpunkten
+    plt.rcParams.update({'font.size': 14})
+    plt.plot(xi, yi, '*', label='data', linewidth=2, markersize=10)
+    plt.plot(x, y, label='interpolation', linewidth=2)
+    plt.legend()
+    plt.xlabel('x')
+    plt.ylabel('y')
+    
 
 def splinej(x, j, xi, yi, mi):
     '''Auswertung des kubischen Polynoms s_j'''
-    '''
-    Parameters
-    ----------
-    x  : ndarray, von xi[0] bis xi[1]
-    j  : Stelle von xi
-    xi : Stuetzstellen 
-    yi : Stützwerten
-    mi : Lösungen von LGS für die zweiten Ableitungen 𝑚𝑗=𝑠′′(𝑥𝑗) , 𝑗=1,2, m[0] = m[-1] = 0
-    
-    Return
-    -------
-    y: interpolationspolynom
-
-    '''
     h = xi[j+1] - xi[j]
     s = ( mi[j]*(xi[j+1] - x)**3 + mi[j+1]*(x - xi[j])**3 )/6/h  \
     + ( yi[j]*(xi[j+1] - x)    + yi[j+1]*(x - xi[j])    )/h      \
@@ -108,13 +112,13 @@ def splineinterpol(x, xi, yi):
     '''
     Parameters
     ----------
-    x  : ndarray, von xi[0] bis xi[1]
-    xi : Stuetzstellen 
-    yi : Stützwerten
+    x  : ndarray from x0 to xn
+    xi : ndarray with n numbers, the x-values for the support-points 
+    yi : ndarray with n numbers, the y-values for the support-points
     
     Return
     -------
-    y: interpolationspolynom
+    y: Evaluations of the interpolation polynomial at points x
 
     '''
 
@@ -170,28 +174,7 @@ def test_splineinterpol():
     plt.ylabel('y')
     
     
-def test_poly_interpol():
-    '''
-    test-function for splineinterpol()
-    '''
-    xi = np.array([-1, 0, 1, 2], dtype=float)
-    yi = np.array([10, -2, 9, -4], dtype=float)
-    x_0 = np.linspace(-1, 0, 100)
-    x_1 = np.linspace(0, 1, 100)
-    x_2 = np.linspace(1, 2, 100)
-    
-    s_0 = poly_interpol(x_0, xi ,yi)
-    s_1 = poly_interpol(x_1, xi ,yi)
-    s_2 = poly_interpol(x_2, xi ,yi)
-
-    plt.figure(figsize=(8,4))
-    plt.plot(xi, yi, '*', markersize=10)
-    plt.plot(x_0, s_0, x_1, s_1, x_2, s_2, linewidth = 2);
-    plt.legend(['', r'$s_0(x)$', r'$s_1(x)$', r'$s_2(x)$']);
-    plt.xlabel('x')
-    plt.ylabel('y')
-    
-    
 if __name__ == "__main__":
-    test_splineinterpol()
     test_poly_interpol()
+    test_splineinterpol()
+
